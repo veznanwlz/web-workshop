@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS public.meeting_note (
+    uuid uuid DEFAULT gen_random_uuid() NOT NULL,
+    user_uuid uuid NOT NULL,
+    meeting_uuid uuid NOT NULL,
+    content text NOT NULL,
+    created_at timestamp DEFAULT current_timestamp NOT NULL,
+    updated_at timestamp DEFAULT current_timestamp NOT NULL,
+    PRIMARY KEY (uuid),
+    FOREIGN KEY (user_uuid) REFERENCES public.user(uuid) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (meeting_uuid) REFERENCES public.meeting(uuid) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- 添加更新时间触发器（修正版）
+CREATE TRIGGER update_meeting_note_updated_at 
+    BEFORE UPDATE ON public.meeting_note 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

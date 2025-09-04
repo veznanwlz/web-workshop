@@ -2,6 +2,13 @@ table:
   name: user
   schema: public
 array_relationships:
+  - name: meeting_notes
+    using:
+      foreign_key_constraint_on:
+        column: user_uuid
+        table:
+          name: meeting_note
+          schema: public
   - name: messages
     using:
       foreign_key_constraint_on:

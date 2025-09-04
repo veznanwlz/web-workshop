@@ -1,0 +1,4 @@
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
+-- DROP TRIGGER IF EXISTS update_meeting_updated_at ON public.meeting;
+-- DROP TRIGGER IF EXISTS update_meeting_note_updated_at ON public.meeting_note;

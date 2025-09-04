@@ -1,0 +1,51 @@
+table:
+  name: meeting_note
+  schema: public
+object_relationships:
+  - name: meeting
+    using:
+      foreign_key_constraint_on: meeting_uuid
+  - name: user
+    using:
+      foreign_key_constraint_on: user_uuid
+insert_permissions:
+  - role: user
+    permission:
+      check: {}
+      set:
+        user_uuid: x-hasura-X-Hasura-User-Id
+      columns:
+        - content
+        - meeting_uuid
+    comment: ""
+select_permissions:
+  - role: user
+    permission:
+      columns:
+        - content
+        - created_at
+        - updated_at
+        - meeting_uuid
+        - user_uuid
+        - uuid
+      filter:
+        user_uuid:
+          _eq: X-Hasura-User-Id
+    comment: ""
+update_permissions:
+  - role: user
+    permission:
+      columns:
+        - content
+      filter:
+        user_uuid:
+          _eq: X-Hasura-User-Id
+      check: null
+    comment: ""
+delete_permissions:
+  - role: user
+    permission:
+      filter:
+        user_uuid:
+          _eq: X-Hasura-User-Id
+    comment: ""

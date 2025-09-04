@@ -1,0 +1,125 @@
+mutation CreateMeeting($name: String!, $start_time: timestamptz!, $end_time: timestamptz!) {
+  insert_meeting(objects: {
+    name: $name,
+    start_time: $start_time,
+    end_time: $end_time
+  }) {
+    returning {
+      uuid
+      name
+      start_time
+      end_time
+    }
+  }
+}
+
+mutation CreateMeetingNote($meeting_uuid: uuid!, $content: String!, $user_uuid: uuid!) {
+  insert_meeting_note(objects: {
+    meeting_uuid: $meeting_uuid,
+    content: $content,
+    user_uuid: $user_uuid
+  }) {
+    returning {
+      uuid
+      content
+      created_at
+      updated_at
+    }
+  }
+}
+
+mutation CreateReplyMessage($content: String!, $reply_to_uuid: uuid!, $room_uuid: uuid!, $user_uuid: uuid!) {
+  insert_message(objects: {
+    content: $content,
+    reply_to_uuid: $reply_to_uuid,
+    room_uuid: $room_uuid,
+    user_uuid: $user_uuid
+  }) {
+    returning {
+      uuid
+      content
+      created_at
+      reply_to {
+        content
+        user {
+          username
+        }
+      }
+    }
+  }
+}
+
+mutation UpdateMeetingNote($uuid: uuid!, $content: String!) {
+  update_meeting_note(
+    where: {uuid: {_eq: $uuid}},
+    _set: {content: $content}
+  ) {
+    returning {
+      uuid
+      content
+      updated_at
+    }
+  }
+}
+
+mutation DeleteMeetingNote($uuid: uuid!) {
+  delete_meeting_note(where: {uuid: {_eq: $uuid}}) {
+    affected_rows
+  }
+}
+
+query GetMeetingWithNotes($uuid: uuid!) {
+  meeting(where: {uuid: {_eq: $uuid}}) {
+    uuid
+    name
+    start_time
+    end_time
+    meeting_notes {
+      uuid
+      content
+      created_at
+      updated_at
+      user {
+        username
+      }
+    }
+  }
+}
+
+query GetRoomMessagesWithReplies($room_uuid: uuid!) {
+  message(where: {
+    room_uuid: {_eq: $room_uuid},
+    reply_to_uuid: {_is_null: true}
+  }, order_by: {created_at: asc}) {
+    uuid
+    content
+    created_at
+    user {
+      username
+    }
+    replies(order_by: {created_at: asc}) {
+      uuid
+      content
+      created_at
+      user {
+        username
+      }
+    }
+  }
+}
+
+query GetUserMeetingNotes($user_uuid: uuid!) {
+  meeting_note(where: {
+    user_uuid: {_eq: $user_uuid}
+  }, order_by: {updated_at: desc}) {
+    uuid
+    content
+    created_at
+    updated_at
+    meeting {
+      uuid
+      name
+      start_time
+    }
+  }
+}
